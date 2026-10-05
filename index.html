@@ -90,7 +90,29 @@ button.secondary{border:1px solid light-dark(#e5d9df,#39343a);background:transpa
 </div>
 </div>
 <script>
-const songs = SONGS;
+const songs = [
+  "LAST SONG",
+  "Off The Mask",
+  "Save You",
+  "BAD EUPHORIA",
+  "PRISONER",
+  "Goodbye",
+  "Butterfly (Depth ver.)",
+  "When I’m Not Around",
+  "TWISTED PARADISE",
+  "New World",
+  "EMBER",
+  "Two Of Us",
+  "Get Out Of My Mind",
+  "KNOCK KNOCK",
+  "If We Lose It All Tonight",
+  "Possiboo-hoo",
+  "TO LOVE SOMEONE",
+  "Play Back",
+  "Dreams Never Sleep",
+  "Abyss",
+  "Prayer"
+];
 let order=[], wins={}, i=0, total=0, a=null, b=null;
 const $=id=>document.getElementById(id);
 function shuffle(x){x=[...x];for(let j=x.length-1;j>0;j--){let k=Math.floor(Math.random()*(j+1));[x[j],x[k]]=[x[k],x[j]]}return x}
