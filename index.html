@@ -1,95 +1,283 @@
-from pathlib import Path
-import json, html
-
-songs = [
-    "LAST SONG", "Off The Mask", "Save You", "BAD EUPHORIA", "PRISONER",
-    "Goodbye", "Butterfly (Depth ver.)", "When I’m Not Around",
-    "TWISTED PARADISE", "New World", "EMBER", "Two Of Us",
-    "Get Out Of My Mind", "KNOCK KNOCK", "If We Lose It All Tonight",
-    "Possiboo-hoo", "TO LOVE SOMEONE", "Play Back", "Dreams Never Sleep",
-    "Abyss", "Prayer"
-]
-
-data = json.dumps(songs, ensure_ascii=False).replace("</", "<\\/")
-site = r'''<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>YUTA Solo Sort</title>
+
 <style>
-:root{
-  color-scheme:light dark;
-  --bg-light:#f5f1ed; --bg-dark:#111013;
-  --surface-light:#fffaf7; --surface-dark:#1b191c;
-  --text-light:#211d20; --text-dark:#f7f2f4;
-  --muted-light:#776d73; --muted-dark:#b9afb5;
-  --line-light:#e5d9df; --line-dark:#39343a;
-  --accent-light:#9d4168; --accent-dark:#d986a8;
+* {
+  box-sizing: border-box;
 }
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{background:#f5f1ed;color:#211d20}
-#app{min-height:100vh;background:light-dark(#f5f1ed,#111013);color:light-dark(#211d20,#f7f2f4);padding:28px 18px 48px}
-.wrap{width:min(760px,100%);margin:auto}
-header{text-align:center;margin:10px 0 28px}
-.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.65}
-h1{font-family:Georgia,serif;font-size:clamp(34px,8vw,58px);line-height:1;margin:8px 0}
-.subtitle{color:light-dark(#776d73,#b9afb5);margin:0}
-.card{background:light-dark(#fffaf7,#1b191c);border:1px solid light-dark(#e5d9df,#39343a);border-radius:24px;padding:22px;box-shadow:0 16px 45px #00000010}
-.progress{display:flex;justify-content:space-between;font-size:13px;color:light-dark(#776d73,#b9afb5);margin-bottom:12px}
-.bar{height:7px;background:light-dark(#eee5e9,#302b30);border-radius:99px;overflow:hidden;margin-bottom:24px}
-.bar i{display:block;height:100%;background:light-dark(#9d4168,#d986a8);width:0;transition:width .25s}
-.prompt{text-align:center;font-size:18px;font-weight:650;margin:0 0 18px}
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.choice{min-height:145px;border:1px solid light-dark(#e5d9df,#39343a);border-radius:20px;background:light-dark(#fff,#211f22);color:inherit;padding:22px 16px;cursor:pointer;font-size:clamp(18px,4vw,25px);font-weight:700;transition:.15s}
-.choice:hover{transform:translateY(-3px);border-color:light-dark(#9d4168,#d986a8);box-shadow:0 10px 25px #00000014}
-.choice:active{transform:scale(.98)}
-.help{text-align:center;color:light-dark(#776d73,#b9afb5);font-size:12px;margin-top:14px}
-button.secondary{border:1px solid light-dark(#e5d9df,#39343a);background:transparent;color:inherit;border-radius:999px;padding:10px 16px;cursor:pointer}
-.center{text-align:center}
-.hidden{display:none}
-.results h2{font-family:Georgia,serif;text-align:center;font-size:34px;margin:4px 0 8px}
-.results p{text-align:center;color:light-dark(#776d73,#b9afb5)}
-.rank{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid light-dark(#e5d9df,#39343a)}
-.num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:light-dark(#f0e1e8,#30262c)}
-.song{font-weight:650;flex:1}
-.actions{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
-.note{margin-top:18px;font-size:11px;line-height:1.5;color:light-dark(#776d73,#b9afb5);text-align:center}
-@media(max-width:560px){.choices{grid-template-columns:1fr}.choice{min-height:105px}.card{padding:17px}}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f5f1ed;
+  color: #211d20;
+}
+
+#app {
+  min-height: 100vh;
+  padding: 28px 18px 48px;
+}
+
+.wrap {
+  width: min(760px, 100%);
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin: 10px 0 28px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .65;
+}
+
+h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(34px, 8vw, 58px);
+  line-height: 1;
+  margin: 8px 0;
+}
+
+.subtitle {
+  color: #776d73;
+  margin: 0;
+}
+
+.card {
+  background: #fffaf7;
+  border: 1px solid #e5d9df;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 16px 45px #00000010;
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #776d73;
+  margin-bottom: 12px;
+}
+
+.bar {
+  height: 7px;
+  background: #eee5e9;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: #9d4168;
+  width: 0;
+  transition: width .25s;
+}
+
+.prompt {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 650;
+  margin: 0 0 18px;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.choice {
+  min-height: 145px;
+  border: 1px solid #e5d9df;
+  border-radius: 20px;
+  background: #fff;
+  color: #211d20;
+  padding: 22px 16px;
+  cursor: pointer;
+  font-size: clamp(18px, 4vw, 25px);
+  font-weight: 700;
+  transition: .15s;
+}
+
+.choice:hover {
+  transform: translateY(-3px);
+  border-color: #9d4168;
+  box-shadow: 0 10px 25px #00000014;
+}
+
+.choice:active {
+  transform: scale(.98);
+}
+
+.help {
+  text-align: center;
+  color: #776d73;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+button.secondary {
+  border: 1px solid #e5d9df;
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.results h2 {
+  font-family: Georgia, serif;
+  text-align: center;
+  font-size: 34px;
+  margin: 4px 0 8px;
+}
+
+.results p {
+  text-align: center;
+  color: #776d73;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 4px;
+  border-bottom: 1px solid #e5d9df;
+}
+
+.num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: #f0e1e8;
+  flex-shrink: 0;
+}
+
+.song {
+  font-weight: 650;
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.note {
+  margin-top: 18px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #776d73;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .choices {
+    grid-template-columns: 1fr;
+  }
+
+  .choice {
+    min-height: 105px;
+  }
+
+  .card {
+    padding: 17px;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div id="app">
-<div class="wrap">
-<header>
-<div class="kicker">Nakamoto Yuta · 21 songs</div>
-<h1>YUTA Solo Sort</h1>
-<p class="subtitle">Choose your favorite song in each matchup.</p>
-</header>
-<section class="card" id="sorter">
-<div class="progress"><span id="count">Match 1</span><span id="percent">0%</span></div>
-<div class="bar"><i id="fill"></i></div>
-<p class="prompt">Which one do you prefer?</p>
-<div class="choices">
-<button class="choice" id="a"></button>
-<button class="choice" id="b"></button>
+  <div class="wrap">
+
+    <header>
+      <div class="kicker">Nakamoto Yuta · 21 songs</div>
+      <h1>YUTA Solo Sort</h1>
+      <p class="subtitle">
+        Choose your favorite song in each matchup.
+      </p>
+    </header>
+
+    <section class="card" id="sorter">
+
+      <div class="progress">
+        <span id="count">Match 1</span>
+        <span id="percent">0%</span>
+      </div>
+
+      <div class="bar">
+        <i id="fill"></i>
+      </div>
+
+      <p class="prompt">Which one do you prefer?</p>
+
+      <div class="choices">
+        <button class="choice" id="a"></button>
+        <button class="choice" id="b"></button>
+      </div>
+
+      <div class="help">
+        Your choices determine your final ranking.
+      </div>
+
+    </section>
+
+    <section class="card results hidden" id="results">
+
+      <h2>Your YUTA ranking</h2>
+
+      <p id="summary"></p>
+
+      <div id="ranking"></div>
+
+      <div class="actions">
+        <button class="secondary" id="restart">
+          Sort again
+        </button>
+
+        <button class="secondary" id="copy">
+          Copy ranking
+        </button>
+      </div>
+
+      <div class="note">
+        Fan-made sorter. Song titles are used for identification;
+        this page does not host audio.
+      </div>
+
+    </section>
+
+  </div>
 </div>
-<div class="help">Your choices determine your final ranking.</div>
-</section>
-<section class="card results hidden" id="results">
-<h2>Your YUTA ranking</h2>
-<p id="summary"></p>
-<div id="ranking"></div>
-<div class="actions">
-<button class="secondary" id="restart">Sort again</button>
-<button class="secondary" id="copy">Copy ranking</button>
-</div>
-<div class="note">Fan-made sorter. Song titles are used for identification; this page does not host audio.</div>
-</section>
-</div>
-</div>
+
 <script>
+
 const songs = [
   "LAST SONG",
   "Off The Mask",
@@ -113,44 +301,157 @@ const songs = [
   "Abyss",
   "Prayer"
 ];
-let order=[], wins={}, i=0, total=0, a=null, b=null;
-const $=id=>document.getElementById(id);
-function shuffle(x){x=[...x];for(let j=x.length-1;j>0;j--){let k=Math.floor(Math.random()*(j+1));[x[j],x[k]]=[x[k],x[j]]}return x}
-function start(){
-  order=shuffle(songs); wins={}; songs.forEach(s=>wins[s]=0);
-  i=0; total=Math.max(1,Math.ceil(songs.length*Math.log2(songs.length)*1.2));
-  $("sorter").classList.remove("hidden"); $("results").classList.add("hidden"); next();
-}
-function next(){
-  if(i>=total){finish();return}
-  let pool=shuffle(songs).filter(s=>s!==a);
-  a=pool[0]; b=pool.find(s=>s!==a && (wins[s]??0)!==(wins[a]??0)) || pool[1] || songs.find(s=>s!==a);
-  $("a").textContent=a; $("b").textContent=b;
-  $("count").textContent=`Match ${i+1} of ${total}`;
-  let p=Math.round(i/total*100); $("percent").textContent=p+"%"; $("fill").style.width=p+"%";
-}
-function choose(winner,loser){
-  wins[winner]=(wins[winner]||0)+1;
-  i++; next();
-}
-function finish(){
-  const ranked=[...songs].sort((x,y)=>wins[y]-wins[x] || x.localeCompare(y));
-  $("sorter").classList.add("hidden"); $("results").classList.remove("hidden");
-  $("summary").textContent=`You completed ${total} matchups. Here are your favorites from #1 to #21.`;
-  $("ranking").innerHTML=ranked.map((s,n)=>`<div class="rank"><span class="num">${n+1}</span><span class="song">${escapeHtml(s)}</span></div>`).join("");
-  $("percent").textContent="100%";
-}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-$("a").onclick=()=>choose(a,b); $("b").onclick=()=>choose(b,a); $("restart").onclick=start;
-$("copy").onclick=()=>{
- const rows=[...document.querySelectorAll(".rank")].map(x=>x.innerText.replace("\n"," — ")).join("\n");
- navigator.clipboard?.writeText("My YUTA Solo Sort ranking:\\n"+rows).then(()=>{$("copy").textContent="Copied!"});
-};
-start();
-</script>
-</body>
-</html>'''.replace("SONGS", data)
 
-path=Path("/mnt/data/yuta-solo-sort.html")
-path.write_text(site, encoding="utf-8")
-print(f"Created {path} ({path.stat().st_size:,} bytes) with {len(songs)} songs.")
+let wins = {};
+let i = 0;
+let total = 0;
+let a = null;
+let b = null;
+
+const $ = id => document.getElementById(id);
+
+function shuffle(array) {
+  const x = [...array];
+
+  for (let j = x.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
+
+    [x[j], x[k]] = [x[k], x[j]];
+  }
+
+  return x;
+}
+
+function start() {
+
+  wins = {};
+
+  songs.forEach(song => {
+    wins[song] = 0;
+  });
+
+  i = 0;
+
+  total = Math.max(
+    1,
+    Math.ceil(songs.length * Math.log2(songs.length) * 1.2)
+  );
+
+  $("sorter").classList.remove("hidden");
+  $("results").classList.add("hidden");
+
+  next();
+}
+
+function next() {
+
+  if (i >= total) {
+    finish();
+    return;
+  }
+
+  const pool = shuffle(songs);
+
+  a = pool[0];
+
+  b = pool.find(song => song !== a) || songs[1];
+
+  $("a").textContent = a;
+  $("b").textContent = b;
+
+  $("count").textContent =
+    `Match ${i + 1} of ${total}`;
+
+  const percent = Math.round((i / total) * 100);
+
+  $("percent").textContent = percent + "%";
+
+  $("fill").style.width = percent + "%";
+}
+
+function choose(winner) {
+
+  wins[winner]++;
+
+  i++;
+
+  next();
+}
+
+function escapeHtml(text) {
+
+  return text.replace(
+    /[&<>"']/g,
+    character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]
+  );
+}
+
+function finish() {
+
+  const ranked = [...songs].sort(
+    (x, y) =>
+      wins[y] - wins[x] ||
+      x.localeCompare(y)
+  );
+
+  $("sorter").classList.add("hidden");
+
+  $("results").classList.remove("hidden");
+
+  $("summary").textContent =
+    `You completed ${total} matchups. Here are your favorites from #1 to #21.`;
+
+  $("ranking").innerHTML =
+    ranked
+      .map(
+        (song, number) => `
+          <div class="rank">
+            <span class="num">${number + 1}</span>
+            <span class="song">${escapeHtml(song)}</span>
+          </div>
+        `
+      )
+      .join("");
+
+  $("percent").textContent = "100%";
+  $("fill").style.width = "100%";
+}
+
+$("a").onclick = () => choose(a);
+
+$("b").onclick = () => choose(b);
+
+$("restart").onclick = start;
+
+$("copy").onclick = () => {
+
+  const rows = [...document.querySelectorAll(".rank")]
+    .map(x => x.innerText.replace("\n", " — "))
+    .join("\n");
+
+  const text =
+    "My YUTA Solo Sort ranking:\n" + rows;
+
+  navigator.clipboard.writeText(text).then(() => {
+
+    $("copy").textContent = "Copied!";
+
+    setTimeout(() => {
+      $("copy").textContent = "Copy ranking";
+    }, 2000);
+
+  });
+};
+
+start();
+
+</script>
+
+</body>
+</html>
