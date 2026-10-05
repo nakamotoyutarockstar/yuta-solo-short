@@ -471,6 +471,163 @@ function shuffle(array) {
 
   for (let j = x.length - 1; j > 0; j--) {
     const k = Math.floor(Math.random() * (j + 1));
+    [x[j], x[k]] = [x[k], x[j]];
+  }
+
+  return x;
+}
+
+function start() {
+
+  ratings = {};
+
+  songs.forEach(song => {
+    ratings[song] = 1000;
+  });
+
+  i = 0;
+
+  $("sorter").classList.remove("hidden");
+  $("results").classList.add("hidden");
+
+  next();
+}
+
+function next() {
+
+  if (i >= total) {
+    finish();
+    return;
+  }
+
+  /*
+   * Pick two songs with similar ratings.
+   * This makes each matchup meaningful.
+   */
+  const sorted = [...songs].sort(
+    (x, y) => ratings[x] - ratings[y]
+  );
+
+  const index = Math.floor(Math.random() * (songs.length - 1));
+
+  a = sorted[index];
+
+  const nearby = sorted.slice(
+    Math.max(0, index - 2),
+    Math.min(songs.length, index + 3)
+  ).filter(song => song !== a);
+
+  b = nearby[Math.floor(Math.random() * nearby.length)];
+
+  $("a").textContent = a;
+  $("b").textContent = b;
+
+  $("count").textContent =
+    `Match ${i + 1} of ${total}`;
+
+  const percent = Math.round((i / total) * 100);
+
+  $("percent").textContent = percent + "%";
+  $("fill").style.width = percent + "%";
+}
+
+function choose(winner, loser) {
+
+  const K = 32;
+
+  const expectedWinner =
+    1 /
+    (1 + Math.pow(
+      10,
+      (ratings[loser] - ratings[winner]) / 400
+    ));
+
+  const change =
+    K * (1 - expectedWinner);
+
+  ratings[winner] += change;
+  ratings[loser] -= change;
+
+  i++;
+
+  next();
+}
+
+function escapeHtml(text) {
+
+  return text.replace(
+    /[&<>"']/g,
+    character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]
+  );
+}
+
+function finish() {
+
+  const ranked = [...songs].sort(
+    (x, y) => ratings[y] - ratings[x]
+  );
+
+  $("sorter").classList.add("hidden");
+  $("results").classList.remove("hidden");
+
+  $("summary").textContent =
+    `You completed ${total} matchups. Here are your favorites from #1 to #21.`;
+
+  $("ranking").innerHTML =
+    ranked.map(
+      (song, number) => `
+        <div class="rank">
+          <span class="num">${number + 1}</span>
+          <span class="song">${escapeHtml(song)}</span>
+        </div>
+      `
+    ).join("");
+
+  $("percent").textContent = "100%";
+  $("fill").style.width = "100%";
+}
+
+$("a").onclick = () => choose(a, b);
+
+$("b").onclick = () => choose(b, a);
+
+$("restart").onclick = start;
+
+$("copy").onclick = () => {
+
+  const rows = [...document.querySelectorAll(".rank")]
+    .map(x => x.innerText.replace("\n", " — "))
+    .join("\n");
+
+  const text =
+    "My YUTA Solo Sort ranking:\n" + rows;
+
+  navigator.clipboard.writeText(text).then(() => {
+
+    $("copy").textContent = "Copied!";
+
+    setTimeout(() => {
+      $("copy").textContent = "Copy ranking";
+    }, 2000);
+
+  });
+};
+
+start();
+
+const $ = id => document.getElementById(id);
+
+function shuffle(array) {
+  const x = [...array];
+
+  for (let j = x.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
 
     [x[j], x[k]] = [x[k], x[j]];
   }
@@ -488,7 +645,7 @@ function start() {
 
   i = 0;
 
-  total = 31;
+  total = 62;
 
   $("sorter").classList.remove("hidden");
   $("results").classList.add("hidden");
